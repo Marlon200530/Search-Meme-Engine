@@ -2,7 +2,7 @@ import fs from 'fs/promises';
 import Tesseract from 'tesseract.js';
 
 
-const importToDB = async () => {
+const importToDB = async () : Promise<void> => {
     try {
         const memeDir = await fs.readdir('../memes');
 
@@ -16,24 +16,27 @@ const importToDB = async () => {
 }
 
 
-// Função para reconhecer texto de uma imagem
-const recognizeText = async (imagePath: string) : Promise<void> => {
+
+const recognizeText = async (imagePath: string) : Promise<string> => {
     try {
         const result = await Tesseract.recognize(
-            imagePath,         // Caminho ou URL da imagem
-            'por',             // Idioma (aqui, inglês)
+            imagePath,        
+            'por',             // Idioma (aqui, portugues)
             {
                 logger: (m) => console.log(m)  // Aqui você pode ver o progresso do OCR
             }
         );
         
         // Resultado do OCR
-        console.log(result.data.text);  // Texto extraído da imagem
+        console.log(result.data.text);  
+        const textFile : string = result.data.text;
 
-
+        return textFile;
     } catch (error) {
         console.error('Erro ao realizar OCR:', error);
+        throw new Error('Erro em processar a imagem');
     }
+
 };
 
 
