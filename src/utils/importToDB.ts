@@ -1,15 +1,34 @@
 import fs from 'fs/promises';
+import Meme from '../models/memeModel'
+import connectDB from './connectDB';
 import Tesseract from 'tesseract.js';
 
 
 const importToDB = async () : Promise<void> => {
     try {
-        const memeDir = await fs.readdir('../memes');
+
+        await connectDB();
+
+        const memeDir : string[] = await fs.readdir('../memes');
 
         console.log(memeDir);
 
 
-        await recognizeText(`../memes/${memeDir[0]}`)
+        
+
+        for (const meme of memeDir) {
+
+            const result : string = await recognizeText(`../memes/${meme}`);
+            const textFile : string = result;
+            const fileName = meme;
+
+            await Meme.create({
+                textFile: textFile,
+                fileName: fileName
+            });
+
+            console.log("Importado co sucesso...");
+        }
     } catch (error) {
         console.error(error);
     }
@@ -39,6 +58,17 @@ const recognizeText = async (imagePath: string) : Promise<string> => {
 
 };
 
+const findAll = async () : Promise<void> => {
+    try {
+        const memes = await Meme.findAll();
+        console.log(memes);
+    } catch (e) {
+        console.log(e);
+    }
+}
 
 
-importToDB();
+
+findAll();
+
+// importToDB();
